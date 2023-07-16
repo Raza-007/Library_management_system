@@ -1,0 +1,472 @@
+#include<iostream>
+#include<fstream>
+#include<iomanip>
+#include<string>
+#include <windows.h>
+#include <string.h>
+using namespace std;
+
+//////////////Global variable declaration///////////////
+
+int opt, isbk;;
+char fid[10], fed[10];
+char fname[25], fTitle[25];
+char* ptr;
+char space[2] = { '|','\0'};
+
+//////////////Prototypes of function////////////////////
+
+void choice();
+void heading();
+void bk_header ();
+void std_header();
+void isbk_header();
+
+class LMS                                                  //base class 
+{
+	public:
+		char stdID[10],stdclass[10],stdname[25];           //char arrays to store student data
+		char BookID[5],BookName[25],AuthorsName[25];       //char arrays to store book data
+
+//////////////files decleration/////////////////////////
+
+		fstream file;
+		fstream stdfile;
+		fstream issue;			
+
+//////////////class member functions////////////////////
+		
+		void AllBooks()                                    // to print all books + details
+		{	
+			file.open("LMS.txt", ios::in);                 //file opens
+			char ch;                                       //char declar to stor data from the file
+			while (!file.eof())                            //while condition to read file till end
+			{
+				file.get(ch);                              //storing ata from file (LMS)
+				if (ch == '|')                             //if condition to replace |
+				{
+					cout << setw(15);                      //replacing |with setw(15)
+					continue;                              //to continue same conditon
+				}
+				cout << ch;                                //print the data stored
+			}
+			file.close();                                  //closing file (LMS)
+			system("pause");                              
+		}
+					
+		
+		void addBooks()                                    // to add new book to library
+		{
+			cout<<"\nAdding Books\n";	
+			file.open("LMS.txt",ios::app);                 //LMS named file opens,getting data from the user.
+			cout<<"\nBook ID:		";
+			cin>>BookID;
+			cout<<"Book Name:		";
+			cin.ignore();                                  //to ignore spaces/null charactors
+			cin.getline(BookName,25);
+			cout<<"Authors Name:		";
+			cin.getline(AuthorsName,25);
+			file<<BookID<<space<<BookName<<space<<AuthorsName<<space<<endl;    //storing all data to file (LMS)
+			file.close();                                  //File(LMS) closes
+			cout<<"\nBook is registered.\n";
+			system("pause");	
+		}
+		
+//////////////search function////////////////////
+	
+		void byid()                                        //to search by id
+		{
+			file.open("LMS.txt", ios::in);                 //LMS named file opens
+			char fidd[10];                                 //char define to get id to be searched
+			cout << "Enter ID You Want To Search: ";
+			cin >>fidd;
+			while (!file.eof())                            //while condition to read file till end
+			{
+				file.getline(fid, 10, '|');                //getting data from the file in fid till |
+				ptr = strstr(fid, fidd);                   //returing pointer to first occurence of fidd to fid
+				file.getline(fTitle, 25, '|');             //getting data from the file in fTitle till 
+				file.getline(fname, 25, '|');              //getting data from the file in fname till 
+				if (ptr)                                   //if starts (for true, proceed)
+				{
+					cout << "Book Found, printing details\n";        //print all the data found
+					cout << "\nBook name: " << fTitle;
+					cout << "\nBook's Author: " << fname;
+					cout << "\nBood id: " << fidd;
+					break;
+				}
+				file.ignore();                             //stop extraction of charactors
+			}
+			cout <<endl<<endl;
+			system("pause");
+			file.close();                                  //File(LMS) closes
+		}
+		
+		void byTitle()                                     //to search by title
+		{
+			file.open("LMS.txt", ios::in);                 //LMS named file opens
+			char fTitle1[25];                              //char define to get title to be searched
+			cout << "Enter Title You Want To Search: ";
+			cin.ignore();                                  //ignoring null charactors
+			cin.getline(fTitle1,25);                       //getting input
+			while (!file.eof())                            //while condition to read file till end
+	  		{
+				file.getline(fid, 10, '|');                //getting data from the file in fid till |
+				file.getline(fTitle, 25, '|');             //getting data from the file in fTitle till |
+				file.getline(fname, 25, '|');              //getting data from the file in fname till |
+				ptr = strstr(fTitle, fTitle1);             //returing pointer to first occurence of fTile1 to fTitle
+				if (ptr)                                   //if starts (for true, proceed)
+				{
+					cout << "Book Found, printing details\n";        //print all the data found
+					cout << "\nBook name: " << fTitle;
+					cout << "\nBook's Author: " << fname;
+					cout << "\nBood id: " << fid;
+					break;
+				}
+				file.ignore();                             //stop extraction of charactors
+	 		}
+			cout <<endl<<endl;
+			system("pause");
+			file.close();                   	           //File(LMS) closes
+		}
+	
+		void byAuthor()                                    //to search by Authors name
+		{
+			file.open("LMS.txt", ios::in);                 //LMS named file opens
+			char fname1[25];                               //char define to get author's name to be searched
+			cout << "Enter Author's Name: ";
+			cin.ignore();                                  //ignoring null charactors
+			cin.getline(fname1, 25);                       //getting input
+			while (!file.eof())                            //while condition to read file till end
+			{
+				file.getline(fid, 10, '|');                //getting data from the file in fid till |
+				file.getline(fTitle, 25, '|');             //getting data from the file in fTitle till |
+				file.getline(fname, 25, '|');              //getting data from the file in fname till |
+				ptr = strstr(fname, fname1);               //returing pointer to first occurence of fname1 to fname
+				if (ptr)                                   //if starts (for true, proceed)
+				{
+					cout << "Book Found, Printing Details\n\n";        //print all the data found
+					cout << "\nBook name: " << fTitle;
+					cout << "\nBook's Author: " << fname;
+					cout << "\nBood id: " << fid;
+					break;
+				}
+				file.ignore();                             //stop extraction of charactors
+			}
+			cout <<endl<< endl;
+			system("pause");
+			file.close();                   	           //File(LMS) closes
+		}
+		
+		void FindBooks()
+		{
+			do											   //Do-while loop start 
+			{
+			system("cls");
+			heading();                                     //calling function named heading
+			cout << "1) Search by id \n2) Search by Title\n";        //asking for input
+			cout << "3) Search by Author \n4) exit\n\n";
+			cout << "option: ";
+			cin >> opt;
+			switch (opt)                                   //switches start
+			{
+				case 1:
+					byid();                                //calling (byid) member function
+					break;
+				case 2:
+					byTitle();                             //calling (bytitle) member function
+					break;
+				case 3:
+					byAuthor();                            //caling (byauthor) member function
+					break;
+			}
+	
+		  	}
+			while (opt != 4);                              //condition for loop to end
+		}
+		
+	
+
+
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+class student : public LMS                                 //derived class
+{
+	public:			
+
+//////////////class member functions////////////////////
+						
+		void Reg_std()                                     // to register students
+		{
+			cout<<"\nAdding a new student\n";	           //taking data
+			cout<<"\n ID:    ";
+			cin>>stdID;
+			cout<<"\n Name:  ";
+			cin.ignore();
+			cin.getline(stdname,25);
+			cout<<"\n Class: ";
+			cin.getline(stdclass,10);
+			stdfile.open("Std.txt",ios::app);              //stdfile opens
+			stdfile<<stdID<<space<<stdname<<space<<stdclass<<space<<"\n";      //storing data in stdfile
+			stdfile.close();	                           //stdfile closes
+			cout <<"\nStudent is registered.\n";
+			system("pause");																	
+		}
+		
+		void Allstd()                                      // to print all students + details
+		{
+			stdfile.open("Std.txt",ios::in);               //stdfile opens
+			char Ch;                                       //char defined to store data in stdfile
+			while(!stdfile.eof())                          //while condition to read file till end
+			{
+				stdfile.get(Ch);                           //storing ata from file (LMS)
+				if (Ch == '|')                             //if condition to replace |
+				{
+					cout << setw(15);                      //replacing |with setw(15)
+					continue;                              //to continue same conditon
+				}
+				cout << Ch;                                //print the data stored
+			}
+			stdfile.close();                               //closing file (std)
+			system("pause");
+		}
+		
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+class issuebooks :public LMS
+{
+	public:
+		
+//////////////class member functions////////////////////
+
+		void All_issBooks()                                // to print all books + details
+		{
+			issue.open("issue.txt", ios::in);              //file opens
+			char ich;                                      //char declar to stor data from the file
+			while (!issue.eof())                           //while condition to read file till end
+			{
+				issue.get(ich);                            //storing ata from file
+				if (ich == '|')                            //if condition to replace |
+				{
+					cout << setw(15);                      //replacing |with setw(15)
+					continue;                              //to continue same conditon
+				}
+				cout << ich;                               //print the data stored
+			}
+			issue.close();                                 //closing file (issue)
+			system("pause");
+		}
+		
+		void IssBooks()                                    // to issue books
+		{	
+			isid();                                        //calling function named isid
+			if (isbk==2)                                   //if comdition
+			{
+				cout<<"\nIssuing Books\n";                //taking data
+				string isu_date,rtn_date;
+				issue.open("issue.txt",ios::in | ios::app);
+				cout<<"\nStudent ID:		";
+				cin>>stdID;
+				cout<<"Student Name:		";
+				cin.getline(stdname,25);
+				cin.getline(stdname,25);
+				cout<<"Enter Book id:		";
+				cin.getline(BookID,5);
+				cout<<"Book title:		";
+				cin.getline(BookName,25);
+				cout<<"Enter issue date:	";
+				getline(cin,isu_date);
+				cout<<"Enter return date:	";
+				getline(cin,rtn_date);
+				issue<<BookID<<space<<BookName<<space<<stdname<<space<<stdID<<space<<isu_date<<space<<rtn_date<<space<<endl; //storing data to file
+				issue.close();                             //file closes
+				cout <<"\nBook is issued.\n";
+				system("pause");	
+			}
+		}		
+		
+		void isid()                                        //to search issued book
+		{
+			issue.open("issue.txt", ios::in);              //file opens
+			char fid1[10];                                 //char to get id to be searched
+			cout << "Enter Book id: ";
+			cin >>fid1;
+			while (!issue.eof())                           //loop to read file til end
+			{
+				issue.getline(fid, 10, '|');               //getting data from file till | to fid
+				ptr = strstr(fid, fid1);                   //returing pointer to first occurence of fidd to fid
+				if (ptr)                                   //if starts (for true, proceed)
+				{
+					cout << "\nBook is already issued...\n";         //if found 
+					isbk=1;                                //isbk=1
+					break;
+				}
+				else
+				{
+					cout<<"Book is not issued yet...\n";   //if not
+					isbk=2;                                //isbk=2
+					break;
+				}
+				issue.ignore();                             //stop extraction of charactors
+				break;
+			}
+			cout << endl;
+			system("pause");
+			issue.close();                                 //file closes
+		}
+};	
+
+//////////////////////////////////////////////////////////////////////////
+
+void heading()                                             //function to print hading
+{
+	cout<<"\n\t\t***** LIBRARY MANAGEMENT SYSTEM *****\n\n";
+}
+		
+void bk_header ()                                          //function to print header of books details
+{
+	cout<<"I.D"<<setw(20)<<"Title"<<setw(20)<<"Author"<<endl;
+	for(int i=0; i<=60; i++ )
+	cout<<"-";
+	cout<<endl;
+}
+		
+void std_header()                                          //function to print header of student details
+{
+	cout<<"I.D"<<setw(25)<<"Name"<<setw(25)<<"Class"<<endl;
+	for(int i=0; i<=60; i++ )
+	cout<<"-";
+	cout<<endl;
+}
+		
+void isbk_header()                                         //function to print header of issue book details
+{
+	cout<<"Book_Name"<<setw(17)<<"Book_ID"<<setw(23)<<"Student_Name"<<setw(20)<<"Student_ID"<<setw(20)<<"Issue_Date"<<setw(20)<<"Return_Date"<<endl;
+	for(int i=0; i<=120; i++ )
+	cout<<"-";
+	cout<<endl;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+void choice()                                              //function to display choice
+{
+	cout<<"How can we help you.\n";
+	cout<<"\n\t1) Add Books"<<setw(37)<<"2) All Books";
+	cout<<"\n\t3) Search Books"<<setw(36)<<"4) Issue Books";
+	cout<<"\n\t5) All Issued Books"<<setw(36)<<"6) Adding Students";
+	cout<<"\n\t7) All Students"<<setw(29)<<"8)Exit\n";
+	cout<<"\nchoose any.\n==> ";
+}
+
+int main()                                                 //main start
+{
+	///////////////variable declaration///////////////
+	LMS obj;                                               //base class objective
+	issuebooks oobj;                                       //derived class (issuebooks) objective
+	student ooobj;                                         //derived class (student) objective
+	char done = 'n';
+	string username;
+	string password;
+	int select;
+	char confirm;
+	system("color 0b");
+	while(done!='y')                                       //while loop to start keep the funtion(in it) runing till done=n
+	{
+	re_enter:                                              //goto function part
+		heading();                                         //calling heading
+		cout<<"Please select any.\n\n";                    //taking input
+		cout<<"\t1) Login";
+		cout<<"\t\t2) Exit \n\n";
+		cout<<"==> ";
+		cin>>select;
+		system("cls");                                     //system clear command
+		heading();
+			
+		if(select == 1)                                    //if start for the specific selection
+		{
+			cout<<"\n\tUSERNAME:    ";                     //taking input
+			cin>>username;
+			cout<<"\tPASSWORD:    ";
+			cin>>password;				
+				if(username=="admin" && password=="pass")  //if condition for correct password and id
+				{
+					char term='n';
+					while(term!='y')                       //while loop to run or display coices again and again till find
+					{
+					plan_change:		                   //part of goto funtion command
+						system("cls");
+						int elect = 0;
+						char con;
+						heading();                         //calling function
+						choice();				           //calling function
+						cin>>elect;
+						system("cls");
+						heading();                         //calling function
+						switch (elect)
+						{
+							case 1:
+								obj.addBooks();            //calling function
+								break;
+							case 2:
+								bk_header();               //calling function
+								obj.AllBooks();            //calling function
+								break;
+							case 3:
+								obj.FindBooks();           //calling function
+								break;
+							case 4:
+								oobj.IssBooks();           //calling function
+								break;
+							case 5:
+								isbk_header();             //calling function
+								oobj.All_issBooks();
+								break;
+							case 6:
+								ooobj.Reg_std();           //calling function
+								break;
+							case 7:
+								std_header();              //calling function
+								ooobj.Allstd();            //calling function
+								break;
+							case 8:
+									cout<<"\nConfirm Termination! with 'y': ";
+								cin>>con; 
+								if(con=='y')
+									term = 'y';            //to end up the loop that displays choices
+								else
+									goto plan_change;      //to go to its part up there somewher
+						}	
+						system("cls");
+					}
+
+				}
+				else
+				{
+					cout<<"Invalid Entry	\n";
+					system("pause");
+					system("cls");
+				}
+		}
+		else if(select == 2)                               //if you want to exit
+		{
+			cout<<"Confirm Exit! (press y to confirm)    ";
+			cin>>confirm;
+			if(confirm == 'y')
+				done = 'y';                                //to end up the loop 
+			else
+				goto re_enter;
+		}
+		else
+		{
+			cout<<"Invalid Entry	\n";
+			system("pause");
+			system("cls");
+			goto re_enter;                                 //to go to its part up there somewher
+		}
+	}	
+}
+
